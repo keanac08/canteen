@@ -143,7 +143,7 @@ else {
 				<div v-if="message.show_error" id="new_item_error" class="alert alert-danger text-center">
 					{{ message.error }}
 				</div>
-				<div v-if="message.show_success" id="new_item_success" class="alert alert-success">
+				<div v-if="message.show_success" id="new_item_success" class="alert alert-success text-center">
 					{{ message.success }}
 				</div>
 			</transition>
