@@ -1,0 +1,226 @@
+<?php 
+if (!empty($_SERVER['HTTP_CLIENT_IP'])){
+	$ip = $_SERVER['HTTP_CLIENT_IP'];
+} 
+else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+	$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+} 
+else {
+	$ip = $_SERVER['REMOTE_ADDR'];
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="author" content="Chris Desiderio">
+		<title>Canteen</title>
+		<!-- Tell the browser to be responsive to screen width -->
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<!-- Bootstrap core CSS -->
+		<link href="<?php echo base_url('resources/templates/bootstrap-3.3.7/css/bootstrap.min.css');?>" rel="stylesheet" >
+		<!-- Custom styles for this template -->
+		<link href="<?php echo base_url('resources/templates/AdminLTE-2.4.2/dist/css/AdminLTE.min.css');?>" rel="stylesheet" >
+		
+		<link href="<?php echo base_url('resources/plugins/vegas/vegas.min.css');?>" rel="stylesheet" >
+		<link href="<?php echo base_url('resources/plugins/toastr/build/toastr.min.css');?>" rel="stylesheet" >
+		<link href="<?php echo base_url('resources/css/custom.css');?>" rel="stylesheet" >
+	</head>
+	<body class="page-v2 layout-full page-dark">
+		<div class="page animsition" style="opacity: .90;">
+			<div class="page-content">
+				<div class="page-main">
+					<div class="user-panel" style="visibility: hidden;">
+						<div class="pull-left image">
+							<img src="<?php echo base_url('resources/images/default.png')?>" onerror="load_default_img()" class="img-circle" alt="User Image">
+						</div>
+						<div class="pull-left info">
+							<p id="customer_name" style="font-size: 14px;text-transform: capitalize;margin-bottom: 5px;"></p>
+							<p id="customer_section" class="font-900" style="font-size: 85%;margin-bottom: 5px;"></p>
+						</div>
+					</div>
+					<div id="table-wrapper" class="col-sm-12" style="min-height: 200px;">
+						<table id="customer_items" class="customer_items" class="table">
+							<thead>
+								<tr>
+									<th class="col-sm-6">Item</th>
+									<th class="col-sm-2 text-right">Price</th>
+									<th class="col-sm-2 text-center">Qty</th>
+									<th class="col-sm-2 text-right">Subtotal</th>
+								</tr>
+							</thead>
+							<tbody>
+								
+							</tbody>
+						</table>
+					</div>
+					
+					<div class="col-sm-12">
+						<hr>
+						<table class="customer_items" class="table">
+							<tr id="grand_total" style="font-weight: bold;">
+								<td width="370px" class="text-right">Total :</td>
+								<td width="100px" class="text-right"></td>
+							</tr>
+							<tr>
+								<td colspan="2">&nbsp;</td>
+							</tr>
+							<tr>
+								<td class="text-right">Meal Allowance :</td>
+								<td id="meal_allowance" class="text-right"></td>
+							</tr>
+							<tr id="grand_total_2">
+								<td class="text-right">Purchase Amount :</td>
+								<td class="text-right"></td>
+							</tr>
+							<tr id="balance" style="font-weight: bold;">
+								<td class="text-right">Remaining Meal Allowance :</td>
+								<td id="balance" style="border-top: 1px solid #f1f1f1;" class="text-right"></td>
+							</tr>
+						</table>
+					</div>
+					<div id="customer-footer" class="page-copyright">
+						<p>&copy; 2018 <span class="text-red">Management Information System</span> All Rights Reserved.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+		<script src="<?php echo base_url('resources/js/jquery-3.2.1/dist/jquery.min.js');?>"></script>
+		<script src="<?php echo base_url('resources/plugins/vegas/vegas.min.js');?>"></script>
+		<script src="<?php echo base_url('resources/plugins/toastr/build/toastr.min.js');?>"></script>
+		<script src="<?php echo base_url('resources/templates/bootstrap-3.3.7/js/bootstrap.min.js');?>"></script>
+		<script src="<?php echo base_url('resources/plugins/socket_io/socket.io-1.7.3.min.js') ?>"></script>
+		<script>
+			
+			const base_url = '<?php echo base_url(); ?>'
+			const session = '<?php echo $ip; ?>'
+			const socket = io('http://'+ window.location.hostname +':3000/canteen');
+			
+			socket.emit('join_session', session);
+			
+			socket.on('new_cart_item', function (data) {
+				
+				if($('#table-wrapper').is(":hidden")){
+					$('#table-wrapper').removeClass('hidden');
+				}
+				
+				$("table#customer_items tbody")
+					.append($('<tr>')
+						.attr('id', data.id)
+						.append($('<td>')
+							.text(data.name)
+						)
+						.append($('<td>')
+							.attr('class', 'text-right')
+							.text( data.price)
+						)
+						.append($('<td>')
+							.attr('class', 'text-center')
+							.text(data.quantity)
+						)
+						.append($('<td>')
+							.attr('class', 'text-right')
+							.text(data.total)
+						)
+					);
+			});
+			
+			socket.on('update_cart_item', function (data) {
+				$("table#customer_items tbody tr#"+data.id)
+					.html($('<td>')
+						.text(data.name)
+					)
+					.append($('<td>')
+						.attr('class', 'text-right')
+						.text( data.price)
+					)
+					.append($('<td>')
+						.attr('class', 'text-center')
+						.text(data.quantity)
+					)
+					.append($('<td>')
+						.attr('class', 'text-right')
+						.text(data.total)
+					)
+			});
+			
+			socket.on('delete_cart_item', function (data) {
+				$("table#customer_items tbody tr#"+data.id).remove();	
+			});
+			
+			socket.on('update_cart_total', function (data) {
+				$("tr#grand_total td:nth-child(2), tr#grand_total_2 td:nth-child(2)").text(data.total);	
+			});
+			
+			socket.on('update_balance', function (data) {
+				$("tr#balance td:nth-child(2)").text(data.balance);	
+			});
+			
+			socket.on('clear_cart', function (data) {
+				$("table#customer_items tbody").html('');
+				
+				$(".user-panel").css('visibility', 'hidden');
+				
+				$('.image img').attr('src', base_url + 'resources/images/default.png');
+				$('p#customer_name').text('');
+				$('p#customer_employee_no').text('');
+				$('p#customer_section').text('');
+				$('td#meal_allowance').text('');
+				$('td#balance').text('');
+			});
+
+			socket.on('employee_details', function (data) {
+				
+				$(".image img").attr("src", data.employee.image_link);
+				$('p#customer_name').text(data.employee.name.toLowerCase());
+				$('p#customer_employee_no').text(data.employee.number.toLowerCase());
+				$('p#customer_section').text(data.employee.section);
+				$('td#meal_allowance').text(data.employee.allowance);
+				$('td#balance').text(data.balance);
+				
+				$(".user-panel").css('visibility', 'visible');
+			});
+
+			socket.on('refresh', function () {
+				location.reload();
+			});
+
+			function load_default_img() {
+				$('.image img').attr('src', base_url + 'resources/images/default.png');
+			}
+			
+			$(function(){
+				
+				$("body.page-v2").vegas({
+					overlay: true,
+					transition: 'fade', 
+					transitionDuration: 4000,
+					delay: 10000,
+					color: 'red',
+					animation: 'random',
+					animationDuration: 20000,
+					slides: [
+						{ src: base_url + 'resources/images/bg/1.jpg' },
+						{ src: base_url + 'resources/images/bg/2.jpg' },
+						{ src: base_url + 'resources/images/bg/3.jpg' },
+						{ src: base_url + 'resources/images/bg/4.jpg' },
+						{ src: base_url + 'resources/images/bg/5.jpg' },
+						{ src: base_url + 'resources/images/bg/6.jpg' }
+						
+					]
+				});
+				
+				//~ toastr.success('Transaction Completed!')
+				toastr.options.timeOut = 0;
+				toastr.options.extendedTimeOut = 0;
+				toastr.info('Place your registered finger on the scanner.')
+				
+			});
+
+		</script>
+		
+		
+	</body>
+</html>
