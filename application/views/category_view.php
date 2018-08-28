@@ -95,10 +95,10 @@
 				</div>
 			</div>
 			<transition name="fade">
-				<div v-if="show_error_msg" id="new_item_error" class="alert alert-danger">
+				<div v-if="show_error_msg" id="new_item_error" class="alert alert-danger text-center">
 					{{ error_message }}
 				</div>
-				<div v-if="show_success_msg" id="new_item_success" class="alert alert-success">
+				<div v-if="show_success_msg" id="new_item_success" class="alert alert-success text-center">
 					{{ success_message }}
 				</div>
 			</transition>
