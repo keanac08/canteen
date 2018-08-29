@@ -110,18 +110,19 @@ else {
 					.append($('<tr>')
 						.attr('id', data.id)
 						.append($('<td>')
+						.attr('class', 'padding-lr-10')
 							.text(data.name)
 						)
 						.append($('<td>')
-							.attr('class', 'text-right')
+							.attr('class', 'text-right padding-lr-10')
 							.text( data.price)
 						)
 						.append($('<td>')
-							.attr('class', 'text-center')
+							.attr('class', 'text-center padding-lr-10')
 							.text(data.quantity)
 						)
 						.append($('<td>')
-							.attr('class', 'text-right')
+							.attr('class', 'text-right padding-lr-10')
 							.text(data.total)
 						)
 					);
@@ -169,6 +170,14 @@ else {
 				$('p#customer_section').text('');
 				$('td#meal_allowance').text('');
 				$('td#balance').text('');
+				
+				toastr.remove()
+			});
+
+			socket.on('transaction_completed', function (data) {
+				toastr.options.timeOut = 0;
+				toastr.options.extendedTimeOut = 0;
+				toastr.success('Please get your receipt.','Transaction Completed')
 			});
 
 			socket.on('employee_details', function (data) {
@@ -193,29 +202,35 @@ else {
 			
 			$(function(){
 				
-				$("body.page-v2").vegas({
-					overlay: true,
-					transition: 'fade', 
-					transitionDuration: 4000,
-					delay: 10000,
-					color: 'red',
-					animation: 'random',
-					animationDuration: 20000,
-					slides: [
-						{ src: base_url + 'resources/images/bg/1.jpg' },
-						{ src: base_url + 'resources/images/bg/2.jpg' },
-						{ src: base_url + 'resources/images/bg/3.jpg' },
-						{ src: base_url + 'resources/images/bg/4.jpg' },
-						{ src: base_url + 'resources/images/bg/5.jpg' },
-						{ src: base_url + 'resources/images/bg/6.jpg' }
+				//~ $("body.page-v2").vegas({
+					//~ overlay: true, 
+					//~ transition: 'fade', 
+					//~ transitionDuration: 4000,
+					//~ delay: 10000,
+					//~ color: 'red',
+					//~ animation: 'random',
+					//~ animationDuration: 20000,
+					//~ slides: [
+						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
+						//~ { src: base_url + 'resources/images/bg/mux1.jpg' },
+						//~ { src: base_url + 'resources/images/bg/dmax1.jpg' },
+						//~ { src: base_url + 'resources/images/bg/truck1.jpg' },
+						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
+						//~ { src: base_url + 'resources/images/bg/mux2.jpg' },
+						//~ { src: base_url + 'resources/images/bg/dmax2.jpg' },
+						//~ { src: base_url + 'resources/images/bg/truck2.jpg' },
+						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
+						//~ { src: base_url + 'resources/images/bg/mux3.jpg' },
+						//~ { src: base_url + 'resources/images/bg/dmax3.jpg' },
+						//~ { src: base_url + 'resources/images/bg/truck3.jpg' },
+						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
+						//~ { src: base_url + 'resources/images/bg/mux4.jpg' },
+						//~ { src: base_url + 'resources/images/bg/dmax4.jpg' }
 						
-					]
-				});
+					//~ ]
+				//~ });
 				
-				//~ toastr.success('Transaction Completed!')
-				toastr.options.timeOut = 0;
-				toastr.options.extendedTimeOut = 0;
-				toastr.info('Place your registered finger on the scanner.')
+			
 				
 			});
 

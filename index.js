@@ -54,6 +54,11 @@ nsp.on('connection', function (socket) {
 		nsp.to(session).emit("clear_cart");
 	});	
 	
+	socket.on('transaction_completed', function () {
+		//~ console.log(data);
+		nsp.to(session).emit("transaction_completed");
+	});	
+	
 	socket.on('employee_details', function (data) {
 		//~ console.log('Employee : ' + data.employee.number + ' - ' + data.employee.name);
 		//~ console.log(data);

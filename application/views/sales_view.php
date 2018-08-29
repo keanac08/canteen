@@ -27,7 +27,7 @@ else {
 				<div class="box-body">
 					<div class="row">
 						<div class="col-sm-12">
-							<div v-for="item in category_active_items" v-bind:class="{ 'font-90': reduce_font_size(item.name) }"  v-on:click="add_item(item)" class="item col-sm-1">
+							<div v-for="item in category_active_items" v-bind:class="reduce_font_size(item.name)"  v-on:click="add_item(item)" class="item col-sm-1">
 								<span class="badge bg-green">&#8369; {{ Number(item.price).toFixed(2) }}</span>
 								<div class="item_name">
 									<span>{{ item.name.toLowerCase() }}</span>
@@ -88,7 +88,7 @@ else {
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h4 class="modal-title">Check Out</h4>
+					<h4 class="modal-title">IPC Canteen POS - Check Out Details</h4>
 				</div>
 				<div class="modal-body">
 					<div class="row">
@@ -175,11 +175,17 @@ else {
 			return str.toLowerCase();
 		},
 		reduce_font_size: function (str) {
-			if(str.length > 27 || str.split(' ').length > 3){
-				return true;
+			if(str.length > 60 || str.split(' ').length > 5){
+				return 'font-70';
+			}
+			else if(str.length > 50 || str.split(' ').length > 4){
+				return 'font-80';
+			}
+			else if(str.length > 27 || str.split(' ').length > 3){
+				return 'font-90';
 			}
 			else{
-				return false;
+				return '';
 			}
 		},
 		imageLoadError: function() {
@@ -363,6 +369,8 @@ else {
 				
 				this.balance = ''
 				this.employee_number = ''
+				this.last_transaction_id = ''
+				this.proceed_check_out_btn = 'Proceed Check Out'
 				
 				socket.emit('join_session', session);
 				socket.emit('clear_cart');
@@ -445,7 +453,18 @@ else {
 					
 			},
 			close_check_out: function(){
+				
 				$('#myModal').modal('hide');
+				
+				if(this.last_transaction_id != ''){
+					
+					this.message = {
+						success: '',
+						show_success : false
+					}
+					
+					this.clear_cart();
+				}
 			},
 			check_out: function() {
 
@@ -475,7 +494,8 @@ else {
 								this.last_transaction_id = response.data
 								this.proceed_check_out_btn = 'Print Receipt'
 								
-								
+								socket.emit('join_session', session);
+								socket.emit('transaction_completed');
 							}
 							else{
 								alert('Transaction Error!')
@@ -489,7 +509,7 @@ else {
 				}
 				//PRINT RECEIPT
 				else{
-					
+					alert('print')
 				}
 			},
 			get_employee_details: function() {
