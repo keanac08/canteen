@@ -34,6 +34,14 @@ a:focus{
 	font-size: 90% !important;
 }
 
+.text-80, .font-80{
+	font-size: 80% !important;
+}
+
+.text-70, .font-70{
+	font-size: 70% !important;
+}
+
 .modal .modal-footer {
     background-color: #ffffff !important;
 }
@@ -174,6 +182,12 @@ a:focus{
 
 table.customer_items{
 	color: #f1f1f1;
+}
+
+table.customer_items tbody tr td.padding-lr-10
+{
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 table.customer_items tbody tr td,
