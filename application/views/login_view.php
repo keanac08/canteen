@@ -26,7 +26,7 @@
 				<div class="page-login-main">
 					<div class="brand" style="text-align: center;">
 						<img class="brand-img" style="margin-bottom: 10px;" src="<?php echo base_url('resources/images/logo_white.png') ?>" alt="...">
-						<p style="font-size: 15px;">Vehicle Portal 2.0</p>
+						<p style="font-size: 15px;">Canteen v.2.0</p>
 					</div>
 					
 					<form id="login-form" role="form">
