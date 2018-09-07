@@ -24,10 +24,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 if(!isset($_SERVER['HTTP_HOST'])){
-	$config['base_url'] = 'http://ecommerce5/canteen_v2/';
+	$config['base_url'] = 'http://ecommerce5/canteen/';
 }
 else {
-	$config['base_url'] = 'http://'.$_SERVER['HTTP_HOST'].'/canteen_v2/';
+	$config['base_url'] = 'http://'.$_SERVER['HTTP_HOST'].'/canteen/';
 }
 
 /*
