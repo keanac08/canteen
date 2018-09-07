@@ -48,7 +48,7 @@
 							foreach($data as $row){
 							?>
 								<tr>
-									<td><a href="#" class="btn_modal" data-id="<?php echo $row->id; ?>"><?php echo $row->id; ?></a></td>
+									<td><a href="javascript:;" class="btn_modal" data-id="<?php echo $row->id; ?>"><?php echo $row->id; ?></a></td>
 									<td><?php echo camelcase($row->customer_name); ?></td>
 									<td><?php echo camelcase($row->cashier_name); ?></td>
 									<td><?php echo long_date($row->purchase_date); ?></td>
