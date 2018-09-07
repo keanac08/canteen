@@ -17,14 +17,14 @@ else {
 <section class="content" id="vue_app">
 	<div class="row">
 		
-		<div class="col-md-2" style="width:15%;">
+		<div class="col-md-2 sales_category" style="width:15%;">
 			<div class="list-group">
-				<a href="#" class="list-group-item" v-for="(category, index) in categories" v-bind:class="{ active: active_index === index }" v-on:click="set_active(index, category.id)">{{ category.name }}</a>
+				<a href="#" class="list-group-item" v-for="(category, index) in categories" v-if="category.active == 1" v-bind:class="{ active: active_index === index }" v-on:click="set_active(index, category.id)">{{ category.name }}</a>
 			</div>
 		</div>
 		<div class="col-md-9" style="width:55%;">
 			<div id="items" class="box box-danger">
-				<div class="box-body">
+				<div class="box-body" style="">
 					<div class="row">
 						<div class="col-sm-12">
 							<div v-for="item in category_active_items" v-bind:class="reduce_font_size(item.name)"  v-on:click="add_item(item)" class="item col-sm-1">
@@ -85,14 +85,30 @@ else {
 	
 	<!-- Modal Check Out-->
 	<div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h4 class="modal-title">IPC Canteen POS - Check Out Details</h4>
+					<h4 class="modal-title">Check Out Details</h4>
 				</div>
 				<div class="modal-body">
 					<div class="row">
-						<div class="col-sm-3" style="width:27%;">
+						<div class="col-sm-3" style="width:35%;">
+							<div class="numpad">
+								<div class="numpad-block" v-on:click="numpad_click('9')">9</div>
+								<div class="numpad-block" v-on:click="numpad_click('8')">8</div>
+								<div class="numpad-block" v-on:click="numpad_click('7')">7</div>
+								<div class="numpad-block" v-on:click="numpad_click('6')">6</div>
+								<div class="numpad-block" v-on:click="numpad_click('5')">5</div>
+								<div class="numpad-block" v-on:click="numpad_click('4')">4</div>
+								<div class="numpad-block" v-on:click="numpad_click('3')">3</div>
+								<div class="numpad-block" v-on:click="numpad_click('2')">2</div>
+								<div class="numpad-block" v-on:click="numpad_click('1')">1</div>
+								<div class="numpad-block" v-on:click="numpad_click('B')"><i class="fa fa-arrow-left"></i></div>
+								<div class="numpad-block" v-on:click="numpad_click('C')">Clear</div>
+								<div class="numpad-block" v-on:click="numpad_click('0')">0</div>
+							</div>
+						</div>
+						<div class="col-sm-3" style="width:20%;">
 							<p>
 								<img :src="employee.image_link" @error="imageLoadError" class="img-thumbnail" alt="Employee Picture">
 							</p>
@@ -100,7 +116,7 @@ else {
 								<input type="text" id="employee_number" class="form-control text-center" maxlength="6" v-model="employee_number" v-on:keyup="get_employee_details" placeholder="Employee Number" />
 							</p>
 						</div>
-						<div class="col-sm-9" style="width:73%;">
+						<div class="col-sm-9" style="width:45%;">
 							<table class="table">
 								<tbody>
 									<tr>
@@ -232,8 +248,7 @@ else {
 		created() {
 			this.fetch_categories();
 			this.fetch_category_active_items();
-			
-			},
+		},
 		watch: {
 			cart: function() {
 				
@@ -244,7 +259,12 @@ else {
 				}
 			},
 			balance: function(){
-				if(this.balance > -200){
+				if(this.balance == ''){
+					this.proceed_check_out_disabled = true;
+					this.message.error = '';
+					this.message.show_error = false;
+				}
+				else if(this.balance > -200){
 					this.proceed_check_out_disabled = false;
 					this.message.error = '';
 					this.message.show_error = false;
@@ -289,7 +309,7 @@ else {
 				})
 				.then((response) => {
 					this.category_active_items = response.data
-					console.log(response.data)
+					//~ console.log(response.data)
 				})
 				.catch(function (err) {
 					console.log(err.message);
@@ -449,9 +469,6 @@ else {
 					balance: this.balance
 				});
 			},
-			print_receipt: function(){
-					
-			},
 			close_check_out: function(){
 				
 				$('#myModal').modal('hide');
@@ -509,13 +526,32 @@ else {
 				}
 				//PRINT RECEIPT
 				else{
-					alert('print')
+					axios({
+							url: base_url + '/sales/print_receipt',
+							method: 'post',
+							data: {
+								cart: this.cart,
+								employee_name: this.employee.name,
+								meal_allowance: this.employee.allowance,
+								total_purchase: this.cart_total,
+								transaction_id: this.last_transaction_id
+							}
+						})
+						.then((response) => {
+							
+							console.log(response.data)
+							
+						})
+						.catch(function (error) {
+							// your action on error success
+							console.log(error);
+						});
 				}
 			},
 			get_employee_details: function() {
 				
 				if((this.employee_number).length == 6){
-				
+					
 					axios.get(base_url + '/sales/ajax_employee_details', { 
 						params: {
 							employee_number: this.employee_number
@@ -529,7 +565,7 @@ else {
 							this.employee = {
 								id: response.data[0]['id'],
 								number: response.data[0]['employee_no'],
-								name: response.data[0]['first_name'] + ' ' + response.data[0]['middle_name'] + ' ' + response.data[0]['last_name'],
+								name: response.data[0]['first_name']  + ' ' + response.data[0]['last_name'],
 								section: response.data[0]['section'],
 								allowance: Number(response.data[0]['meal_allowance']).toFixed(2),
 								image_link: base_url + 'resources/images/emp_pics/' + response.data[0]['employee_no']
@@ -544,7 +580,9 @@ else {
 							});
 						}
 						else{
-							alert('Employee does not exist!')
+							//~ alert('Employee does not exist!')
+							this.message.error = 'Employee does not exist!';
+							this.message.show_error = true;
 						}
 						
 					})
@@ -568,7 +606,28 @@ else {
 						image_link: base_url + '/resources/images/default.png'
 					}
 					this.balance = ''
+					
+					this.message.show_error = false;
 				}
+			},
+			numpad_click: function(value){
+
+				let id = this.employee_number;
+				
+				if(value == 'C'){
+					id = '';
+				}
+				else if(value == 'B'){
+					id = id.slice(0, -1)
+				}
+				else{
+					if(id.length < 6){
+						id = id + value;
+					}
+				}
+
+				this.employee_number = id;
+				this.get_employee_details();
 			}
 		}
 	});
@@ -582,7 +641,7 @@ else {
 			var left = 1360;
 			left += window.screenX;
 			
-			window.open('<?php echo base_url("sales/customer"); ?>','windowName','resizable=0,scrollbars=1,fullscreen=yes,height='+screen.availHeight+',width=' + screen.availWidth + '  , left=' + left + ', toolbar=0, menubar=0,status=1');    
+			window.open('<?php echo base_url("sales/customer"); ?>','IPC Canteen v.2.0','resizable=0,scrollbars=1,fullscreen=yes,height='+screen.availHeight+',width=' + screen.availWidth + '  , left=' + left + ', toolbar=0, menubar=0,status=1');    
 			return 0;
 		});
 		

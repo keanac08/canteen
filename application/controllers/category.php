@@ -5,7 +5,7 @@ class Category extends CI_Controller {
 
 	public function __construct(){
 		parent::__construct();
-
+		
 		$this->load->model('category_model');
 		//~ session_check();
 	}
@@ -13,7 +13,16 @@ class Category extends CI_Controller {
 	public function index(){
 		
 		$data['content'] = 'category_view';
-		$data['title'] = 'Category <small>Item Setup</small>';
+		$data['title'] = 'Category Setup';
+		$data['head_title'] = 'Canteen | POS';
+		//~ $data['items'] = $this->category_model->get_category_items();
+		$this->load->view('include/template',$data);
+	}
+	
+	public function item(){
+		
+		$data['content'] = 'category_item_view';
+		$data['title'] = 'Item Setup</small>';
 		$data['head_title'] = 'Canteen | POS';
 		//~ $data['items'] = $this->category_model->get_category_items();
 		$this->load->view('include/template',$data);
@@ -39,6 +48,11 @@ class Category extends CI_Controller {
 		echo json_encode($this->category_model->update_item_active_status($this->input->get('id')));
 	}
 	
+	public function ajax_change_category_status(){
+		
+		echo json_encode($this->category_model->update_category_active_status($this->input->get('id')));
+	}
+	
 	public function ajax_category_active_items(){
 		
 		echo json_encode($this->category_model->get_category_active_items($this->input->get('category_id')));
@@ -54,6 +68,20 @@ class Category extends CI_Controller {
 			
 			$new_item_id = $this->category_model->save_new_item($item_name, $item_price);
 			echo json_encode($this->category_model->save_new_item_category($new_item_id, $item_category));
+		}
+		else{
+			echo json_encode(false);
+		}
+	}
+	
+	public function ajax_new_category(){
+		
+		$category_name = $this->input->get('category_name');
+		
+		if(!$this->category_model->check_category_duplicate($category_name)){
+			
+			$new_category_id = $this->category_model->save_new_category($category_name);
+			echo json_encode($new_category_id);
 		}
 		else{
 			echo json_encode(false);
@@ -81,6 +109,23 @@ class Category extends CI_Controller {
 			//add update logs
 			$this->category_model->insert_update_logs($item_id, $old_name, $old_price, $old_category, $updated_by);
 			
+			echo json_encode(true);
+		}	
+		else{
+			echo json_encode(false);
+		}
+	}
+	
+	public function ajax_update_category(){
+		
+		$updated_by = $this->session->ctn_user_id;
+		
+		$category_id = $this->input->get('category_id');
+		$category_name = $this->input->get('category_name');
+		
+		if(!$this->category_model->check_category_duplicate_on_update($category_id, $category_name)){
+			//update category name
+			$this->category_model->update_category($category_id, $category_name);
 			echo json_encode(true);
 		}	
 		else{

@@ -77,11 +77,15 @@
 						},
 						url:'<?php echo base_url();?>login/ajax_validate',
 						success:function(response){
-							if(response != 'success'){
-								$('.alert').show('slow');
+							if(response == 'admin'){
+								window.location.href = '<?php echo base_url();?>category/index';
 							}
-							else {
-								window.location.href = '<?php echo base_url();?>sales/';
+							else if(response == 'cashier' ){
+								window.location.href = '<?php echo base_url();?>sales/index';
+								
+							}
+							else{
+								$('.alert').show('slow');
 							}
 						}
 					});

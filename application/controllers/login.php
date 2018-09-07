@@ -38,7 +38,12 @@ class Login extends CI_Controller {
 				);
 			$this->session->set_userdata($user_data);
 			
-			echo 'success';
+			if($data[0]->user_type == 'administrator'){
+				echo 'admin';
+			}
+			else{ 
+				echo 'cashier';
+			}
 		}
 		else{
 			echo 'error';
@@ -48,11 +53,6 @@ class Login extends CI_Controller {
 	public function logout(){
 		
 		$current_datetime = date('d-M-y H:i:s');
-		$params = array(
-						$current_datetime, 
-						$this->session->veh_portal_session_id
-					);
-		$this->login_model->update_user_log($params);
 		
 		$user_data = $this->session->get_userdata();
 		foreach($user_data as $key => $value){

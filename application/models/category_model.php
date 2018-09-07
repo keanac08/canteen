@@ -8,22 +8,9 @@ class Category_model extends CI_Model {
 
 	public function get_categories(){
 
-		$sql = "SELECT id, name
+		$sql = "SELECT id, name, active
 				FROM category_tbl
-				ORDER by id";
-				
-		//~ $sql = "SELECT c.name,
-					//~ c.id,
-					//~ COUNT(i.id) item_count,
-					//~ COUNT(CASE WHEN i.active = 1 THEN 1 ELSE NULL END) active_count
-				//~ FROM items_tbl i
-				//~ LEFT JOIN item_category_tbl ic
-					//~ ON ic.item_id = i.id
-				//~ LEFT JOIN category_tbl c
-					//~ ON ic.category_id = c.id
-				//~ WHERE 1 = 1
-					//~ GROUP BY c.id, c.name
-				//~ ORDER BY ic.category_id, i.name";
+				ORDER by (CASE WHEN id = 15 then 1 else 2 end), id";
 
 		$data = $this->db->query($sql);
 		return $data->result_array();
@@ -62,16 +49,34 @@ class Category_model extends CI_Model {
 	
 	public function get_category_active_items($category_id = NULL){
 
-		$sql = "SELECT i.id, i.name, i.price, i.active, ic.category_id
-				FROM items_tbl i
-				LEFT JOIN item_category_tbl ic
-				ON i.id = ic.item_id
-				WHERE 1 = 1
-				AND i.active = 1
-				AND ic.category_id = IFNULL(?, (select min(id) FROM category_tbl))
-				ORDER BY CASE WHEN i.name like '%rice%' then 1 else 2 END, i.name";
-
-		$data = $this->db->query($sql, $category_id);
+		if($category_id == NULL OR $category_id == 15){
+			$sql = "SELECT it.id, it.name, it.price, it.active, '15' category_id, COUNT(it.id) cnt
+					FROM transaction_tbl t
+					LEFT JOIN transaction_item_tbl ti
+					ON t.id = ti.trans_id
+					LEFT JOIN items_tbl it
+					ON ti.item_id = it.id
+					WHERE t.cashier_id = ".$this->session->ctn_user_id."
+					AND DATE(t.datetime) = '".date("Y-m-d")."'
+					AND it.active = 1
+					-- AND it.name not like '%rice%'
+					GROUP BY it.id
+					ORDER BY CASE WHEN it.name like '%rice%' then 1 else 2 END, cnt DESC";
+					//~ ".date("Y-m-d")." ".$this->session->ctn_user_id."
+			$data = $this->db->query($sql);
+		}
+		else{
+			$sql = "SELECT i.id, i.name, i.price, i.active, ic.category_id
+					FROM items_tbl i
+					LEFT JOIN item_category_tbl ic
+					ON i.id = ic.item_id
+					WHERE 1 = 1
+					AND i.active = 1
+					AND ic.category_id = ?
+					ORDER BY CASE WHEN i.name like '%rice%' then 1 else 2 END, i.name";
+			$data = $this->db->query($sql, $category_id);		
+		}
+		
 		return $data->result_array();
 	}
 	
@@ -85,9 +90,26 @@ class Category_model extends CI_Model {
 
 	}
 	
+	public function update_category_active_status($category_id){
+
+		$sql = "UPDATE category_tbl 
+				SET active = (CASE WHEN active = 1 THEN 0 ELSE 1 END) 
+				WHERE id = ?";
+
+		return $this->db->query($sql, $category_id);
+
+	}
+	
 	public function check_item_duplicate($item_name)
 	{
 		$query = $this->db->get_where('items_tbl', array('name' => $item_name));
+
+		return $query->num_rows();
+	}
+	
+	public function check_category_duplicate($category_name)
+	{
+		$query = $this->db->get_where('category_tbl', array('name' => $category_name));
 
 		return $query->num_rows();
 	}
@@ -99,6 +121,13 @@ class Category_model extends CI_Model {
 		return $query->num_rows();
 	}
 	
+	public function check_category_duplicate_on_update($category_id, $category_name)
+	{
+		$query = $this->db->get_where('category_tbl', array('name' => $category_name, 'id !=' => $category_id));
+
+		return $query->num_rows();
+	}
+	
 	public function save_new_item($item_name, $item_price){
 
 		$sql = "INSERT INTO items_tbl (name, price, active, datetime) VALUES (?, ?, ?, ?)";
@@ -106,6 +135,16 @@ class Category_model extends CI_Model {
 		$params = array($item_name, $item_price, 1, date('Y-m-d H:i:s'));
 
 		$this->db->query($sql, $params);
+		
+		return $this->db->insert_id();
+
+	}
+	
+	public function save_new_category($category_name){
+
+		$sql = "INSERT INTO category_tbl (name) VALUES (?)";
+
+		$this->db->query($sql, $category_name);
 		
 		return $this->db->insert_id();
 
@@ -128,6 +167,17 @@ class Category_model extends CI_Model {
 				price = ?
 				WHERE id = ?";
 		$params = array($item_name, $item_price, $item_id);
+
+		return $this->db->query($sql, $params);
+
+	}
+	
+	public function update_category($category_id, $category_name){
+
+		$sql = "UPDATE category_tbl 
+				SET name = ?
+				WHERE id = ?";
+		$params = array($category_name, $category_id);
 
 		return $this->db->query($sql, $params);
 

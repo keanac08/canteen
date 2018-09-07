@@ -31,6 +31,10 @@ else {
 		<div class="page animsition" style="opacity: .90;">
 			<div class="page-content">
 				<div class="page-main">
+					<div class="text-right">
+						<img width="100px" style="margin-bottom: 5px;" src="<?php echo base_url('resources/images/logo_white.png')?>">
+						<p style="margin-bottom: 0;font-size: 12px;">IPC Canteen v.2.0</p>
+					</div>
 					<div class="user-panel" style="visibility: hidden;">
 						<div class="pull-left image">
 							<img src="<?php echo base_url('resources/images/default.png')?>" onerror="load_default_img()" class="img-circle" alt="User Image">
@@ -157,6 +161,17 @@ else {
 			
 			socket.on('update_balance', function (data) {
 				$("tr#balance td:nth-child(2)").text(data.balance);	
+				
+				if(data.balance < -200){
+					toastr.remove()
+					toastr.options.timeOut = 0;
+					toastr.options.extendedTimeOut = 0;
+					toastr.error('Credit limit has been exceeded.','Cannot proceed!')
+					//~ alert('error');
+				}
+				else{
+					toastr.remove()
+				}
 			});
 			
 			socket.on('clear_cart', function (data) {
@@ -190,6 +205,17 @@ else {
 				$('td#balance').text(data.balance);
 				
 				$(".user-panel").css('visibility', 'visible');
+				
+				if(data.balance < -200){
+					toastr.remove()
+					toastr.options.timeOut = 0;
+					toastr.options.extendedTimeOut = 0;
+					toastr.error('Credit limit has been exceeded.','Cannot proceed!')
+					//~ alert('error');
+				}
+				else{
+					toastr.remove()
+				}
 			});
 
 			socket.on('refresh', function () {
@@ -202,33 +228,33 @@ else {
 			
 			$(function(){
 				
-				//~ $("body.page-v2").vegas({
-					//~ overlay: true, 
-					//~ transition: 'fade', 
-					//~ transitionDuration: 4000,
-					//~ delay: 10000,
-					//~ color: 'red',
-					//~ animation: 'random',
-					//~ animationDuration: 20000,
-					//~ slides: [
-						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
-						//~ { src: base_url + 'resources/images/bg/mux1.jpg' },
-						//~ { src: base_url + 'resources/images/bg/dmax1.jpg' },
-						//~ { src: base_url + 'resources/images/bg/truck1.jpg' },
-						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
-						//~ { src: base_url + 'resources/images/bg/mux2.jpg' },
-						//~ { src: base_url + 'resources/images/bg/dmax2.jpg' },
-						//~ { src: base_url + 'resources/images/bg/truck2.jpg' },
-						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
-						//~ { src: base_url + 'resources/images/bg/mux3.jpg' },
-						//~ { src: base_url + 'resources/images/bg/dmax3.jpg' },
-						//~ { src: base_url + 'resources/images/bg/truck3.jpg' },
-						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
-						//~ { src: base_url + 'resources/images/bg/mux4.jpg' },
-						//~ { src: base_url + 'resources/images/bg/dmax4.jpg' }
+				$("body.page-v2").vegas({
+					overlay: true, 
+					transition: 'fade', 
+					transitionDuration: 4000,
+					delay: 10000,
+					color: 'red',
+					animation: 'random',
+					animationDuration: 20000,
+					slides: [
+						{ src: base_url + 'resources/images/bg/ipc.jpg' },
+						{ src: base_url + 'resources/images/bg/mux1.jpg' },
+						{ src: base_url + 'resources/images/bg/dmax1.jpg' },
+						{ src: base_url + 'resources/images/bg/truck1.jpg' },
+						{ src: base_url + 'resources/images/bg/ipc.jpg' },
+						{ src: base_url + 'resources/images/bg/mux2.jpg' },
+						{ src: base_url + 'resources/images/bg/dmax2.jpg' },
+						{ src: base_url + 'resources/images/bg/truck2.jpg' },
+						{ src: base_url + 'resources/images/bg/ipc.jpg' },
+						{ src: base_url + 'resources/images/bg/mux3.jpg' },
+						{ src: base_url + 'resources/images/bg/dmax3.jpg' },
+						{ src: base_url + 'resources/images/bg/truck3.jpg' },
+						{ src: base_url + 'resources/images/bg/ipc.jpg' },
+						{ src: base_url + 'resources/images/bg/mux4.jpg' },
+						{ src: base_url + 'resources/images/bg/dmax4.jpg' }
 						
-					//~ ]
-				//~ });
+					]
+				});
 				
 			
 				

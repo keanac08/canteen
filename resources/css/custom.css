@@ -113,20 +113,20 @@ a:focus{
 .item{
 	border-radius: 3px;
     position: relative;
-    padding: 10px 5px;
-    margin: 5px;
-    min-width: 92px;
-    max-width: 92px;
-    min-height: 92px;
-    max-height: 92px;
+    padding: 10px 5px 9px 5px;
+    margin: 3px;
+    min-width: 90px;
+    max-width: 90px;
+    min-height: 90px;
+    max-height: 90px;
     text-align: center;
     color: #666;
     border: 1px solid #ddd;
     background-color: #f4f4f4;
-    font-size: 15px;
+    font-size: 14px;
     display: table;
-    height: 92px;
-    width: 92px;
+    height: 90px;
+    width: 90px;
     cursor: pointer;
 }
 
@@ -167,11 +167,14 @@ a:focus{
 }
 
 #items .box-body{
-	min-height: 525px;
+	max-height: 593px;
+	min-height: 585px;
+	overflow-y:scroll;
+	overflow-x: hidden;
 }
 
 #transactions .box-body{
-	min-height: 410px;
+	min-height: 470px;
 }
 
 #customer_transactions .box-body{
@@ -338,4 +341,35 @@ body, html {
     font-size: 11px;
     letter-spacing: 1px;
     margin-top: 60px;
+}
+
+.list-group-item{
+	padding: 11px 15px 10px 15px;
+}
+
+#numpad {
+    width: 100%;
+    border: 1px solid black;
+    display: inline-block;
+}
+.numpad-block {
+	display: inline-block;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: calc(33% - 4px);
+	height: 90px;
+	margin: 2px;
+	background-color: #e7e7e7;
+	border: 1px solid #ddd;
+	float: right;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	padding: 5px 0 5px 10px;
+	font-size: 25px;
+	font-weight: bold;
+}
+
+.numpad-block:hover{
+	background-color: #cfcfcf;
 }
