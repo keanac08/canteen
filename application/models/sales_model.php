@@ -35,7 +35,7 @@ class Sales_model extends CI_Model {
 					 CONCAT(pit.first_name, ' ', pit.last_name) customer_name, 
 					 t.total_purchase, 
 					 t.datetime purchase_date,
-					 CASE WHEN t.datetime > '2018-09-10 10:00:00' 
+					 CASE WHEN t.datetime > '2018-09-10 09:09:00' 
 							THEN CONCAT(c.firstname, ' ', c.lastname) 
 							ELSE CONCAT(pit2.first_name, ' ', pit2.last_name) 
 					 END cashier_name
@@ -61,7 +61,7 @@ class Sales_model extends CI_Model {
 					 CONCAT(pit.first_name, ' ', pit.last_name) customer_name, 
 					 t.total_purchase, 
 					 t.datetime purchase_date,
-					 CASE WHEN t.datetime > '2018-09-10 10:00:00' 
+					 CASE WHEN t.datetime > '2018-09-10 09:09:00' 
 						THEN CONCAT(c.firstname, ' ', c.lastname) 
 						ELSE CONCAT(pit2.first_name, ' ', pit2.last_name) 
 					 END cashier_name
