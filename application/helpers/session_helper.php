@@ -5,19 +5,10 @@ if ( ! function_exists('session_check')){
 		// Get current CodeIgniter instance
 		$CI =& get_instance();
 		// We need to use $CI->session instead of $this->session
-		$user_data =  $CI->session->userdata('veh_portal_user_id');
+		$user_data =  $CI->session->userdata('ctn_user_id');
 		if (!isset($user_data)){ 
 			$CI->session->set_flashdata('login_error', 1);
 			redirect('login');
-		}
-		else{
-			if(time()-$CI->session->userdata('veh_portal_session_start') > 600){
-				$CI->session->set_userdata('veh_portal_last_link', $CI->uri->uri_string());
-				redirect('login/lock_screen');
-			}
-			else{
-				$CI->session->veh_portal_session_start = time();
-			}
 		}
 	}
 }

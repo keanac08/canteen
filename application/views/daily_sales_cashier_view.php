@@ -5,12 +5,14 @@
 ?>
 <link href="<?php echo base_url('resources/plugins/datatables/datatables.min.css') ?>" rel="stylesheet" >
 <link href="<?php echo base_url('resources/plugins/daterangepicker/daterangepicker.css') ?>" rel="stylesheet" >
+<link href="<?php echo base_url('resources/plugins/select/css/bootstrap-select.min.css'); ?>" rel="stylesheet">
+
 <section class="content">
 	<div class="row">
 		<div class="col-md-9">
 			<div class="box box-danger">
 				<div class="box-header with-border">
-					<h6 class="box-title">Cashier SAales</h6>
+					<h6 class="box-title">Cashier Sales</h6>
 					<div class="box-tools pull-right" style="margin-top: 5px;">
 						<a class="text-red" target="_blank" data-toggle="tooltip" data-placement="top" title="PDF" href="<?php echo base_url("reports/sales_report_pdf/index/".str_replace('/', '', $from_date).'/'.str_replace('/', '', $to_date)); ?>" class=""><i class="fa fa-file-pdf-o"></i></a>
 						<a class="text-green" target="_blank" data-toggle="tooltip" data-placement="top" title="Excel" href="<?php echo base_url("reports/sales_report_excel/index/".str_replace('/', '', $from_date).'/'.str_replace('/', '', $to_date)); ?>" class=""><i class="fa fa-file-excel-o"></i></a>
@@ -25,6 +27,28 @@
 								<label class="col-sm-2 control-label" for="unput1">Purchase Date</label>
 								<div class="col-sm-4">
 									<input class="form-control" type="text" name="purchase_date" value="<?php echo ($from_date == '')? date('m/01/Y'):date('m/d/Y', strtotime($from_date)); ?> - <?php echo ($to_date == '')? date('m/d/Y'):date('m/d/Y', strtotime($to_date)); ?>" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="unput1">Cashier</label>
+								<div class="col-sm-4">
+									<select class="form-control selectpicker" data-live-search="true" name="cashier_id">
+										<option value="0">Nothing Selected...</option>
+										<?php 
+										foreach($cashiers as $cashier){
+											if($cashier_id == $cashier->id){
+											?>
+												<option selected value="<?php echo $cashier->id;?>"><?php echo $cashier->name;?></option>
+											<?php 
+											}
+											else{
+											?>
+												<option value="<?php echo $cashier->id;?>"><?php echo $cashier->name;?></option>
+											<?php	
+											}
+										}
+										?>
+									</select>
 								</div>
 							</div>
 						</form>
@@ -81,8 +105,16 @@
 <script src="<?php echo base_url('resources/plugins/daterangepicker/moment.min.js');?>"></script>
 <script src="<?php echo base_url('resources/plugins/daterangepicker/daterangepicker.js');?>"></script>
 <script src="<?php echo base_url('resources/plugins/datatables/datatables.min.js');?>"></script>
+<script type="text/javascript" src="<?php echo base_url('resources/plugins/select/js/bootstrap-select.min.js'); ?>"></script>
+
 <script>
-	$(document).ready(function() {
+	$(document).ready(function() {   
+		
+		$('select').on('change', function(e){
+			$('input[name="from_date"]').val(picker.startDate.format('YYYY-MM-DD'));
+			$('input[name="to_date"]').val(picker.endDate.format('YYYY-MM-DD'));
+			form_filters.submit();
+		});
 		
 		$('#sales_report').DataTable({
 			//~ 'bSort' : false

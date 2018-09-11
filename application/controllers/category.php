@@ -7,7 +7,7 @@ class Category extends CI_Controller {
 		parent::__construct();
 		
 		$this->load->model('category_model');
-		//~ session_check();
+		session_check();
 	}
 	
 	public function index(){

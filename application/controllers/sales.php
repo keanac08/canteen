@@ -12,7 +12,7 @@ class Sales extends CI_Controller {
 		parent::__construct();
 
 		//~ $this->load->model('sales_model');
-		//~ session_check();
+		session_check();
 	}
 	
 	public function index(){
@@ -51,17 +51,20 @@ class Sales extends CI_Controller {
 	public function sales_by_cashier(){
 		
 		$this->load->model('sales_model');
+		$this->load->model('user_model');
 		
 		$from_date = $this->input->post('from_date') == NULL ? date('Y-m-d') : date('Y-m-d', strtotime($this->input->post('from_date')));
 		$to_date = $this->input->post('to_date') == NULL ? date('Y-m-d') : date('Y-m-d', strtotime($this->input->post('to_date')));
-		$cashier_id = $this->input->post('cashier_id');
+		$cashier_id = $this->input->post('cashier_id') == NULL ? 0 : $this->input->post('cashier_id');
 		
-		$data['content'] = 'sales_report_view';
+		$data['content'] = 'daily_sales_cashier_view';
 		$data['title'] = 'IPC Canteen POS';
 		$data['head_title'] = 'Canteen | POS';
 		$data['from_date'] = $from_date;
 		$data['to_date'] = $to_date;
+		$data['cashier_id'] = $cashier_id;
 		$data['data'] = $this->sales_model->get_sales_by_date_range($from_date, $to_date, $cashier_id);
+		$data['cashiers'] = $this->user_model->get_cashiers();
 		$this->load->view('include/template',$data);
 	}
 	

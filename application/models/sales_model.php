@@ -27,7 +27,7 @@ class Sales_model extends CI_Model {
 			$and = '';
 		}
 		else{
-			$and = 'AND c.cashier_id = ' . $cashier_id;
+			$and = 'AND c.id = ' . $cashier_id;
 		}
 		
 		//change datetime to cutoff date

@@ -27,4 +27,15 @@ class User_model extends CI_Model {
 		$data = $this->db->query($sql,$employee_number);
 		return $data->result();
 	}
+	
+	public function get_cashiers(){
+
+		$sql = "SELECT id, CONCAT(firstname, ' ', lastname) name
+				FROM cashier_tbl
+				WHERE user_type_id = 2
+				AND id != 1";
+				
+		$data = $this->db->query($sql);
+		return $data->result();
+	}
 }
