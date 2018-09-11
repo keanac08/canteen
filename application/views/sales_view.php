@@ -172,8 +172,6 @@ else {
 <script src="<?php echo base_url('resources/plugins/socket_io/socket.io-1.7.3.min.js') ?>"></script>
 <script>
 	
-	
-	
 	//~ var socket = socket.connect('http://localhost:3000');
 	const base_url = '<?php echo base_url(); ?>'
 	const session = '<?php echo $ip; ?>'
@@ -338,7 +336,7 @@ else {
 
 					this.cart.splice(index, 1, this.new_items)
 					
-					socket.emit('join_session', session);
+					//~ socket.emit('join_session', session);
 					socket.emit('update_cart_item', {
 						id: this.new_items.id, 
 						name: this.new_items.name, 
@@ -350,7 +348,7 @@ else {
 				else {
 					this.cart.push(this.new_items);
 					
-					socket.emit('join_session', session);
+					//~ socket.emit('join_session', session);
 					socket.emit('new_cart_item', {
 						id: this.new_items.id, 
 						name: this.new_items.name, 
@@ -392,7 +390,7 @@ else {
 				this.last_transaction_id = ''
 				this.proceed_check_out_btn = 'Proceed Check Out'
 				
-				socket.emit('join_session', session);
+				//~ socket.emit('join_session', session);
 				socket.emit('clear_cart');
 			},
 			plus_qty: function(index){
@@ -405,7 +403,7 @@ else {
 				};
 				this.cart.splice(index, 1, this.new_items);
 				
-				socket.emit('join_session', session);
+				//~ socket.emit('join_session', session);
 				socket.emit('update_cart_item', {
 					id: this.new_items.id, 
 					name: this.new_items.name, 
@@ -426,7 +424,7 @@ else {
 					
 					this.cart.splice(index, 1, this.new_items);
 					
-					socket.emit('join_session', session);
+					//~ socket.emit('join_session', session);
 					socket.emit('update_cart_item', {
 						id: this.new_items.id, 
 						name: this.new_items.name, 
@@ -443,7 +441,7 @@ else {
 					
 					this.cart.splice(index, 1);
 					
-					socket.emit('join_session', session);
+					//~ socket.emit('join_session', session);
 					socket.emit('delete_cart_item', {
 						id: this.new_items.id,
 						name: this.new_items.name
@@ -455,7 +453,7 @@ else {
 				this.cart_total = _.chain(this.cart).map((item) => { return Number(item.total) }).sum();
 				this.cart_total = Number(this.cart_total).toFixed(2);
 				
-				socket.emit('join_session', session);
+				//~ socket.emit('join_session', session);
 				socket.emit('update_cart_total', {
 					total: this.cart_total
 				});
@@ -464,7 +462,7 @@ else {
 			
 				this.balance = Number(this.employee.allowance - this.cart_total).toFixed(2)
 				
-				socket.emit('join_session', session);
+				//~ socket.emit('join_session', session);
 				socket.emit('update_balance', {
 					balance: this.balance
 				});
@@ -511,7 +509,7 @@ else {
 								this.last_transaction_id = response.data
 								this.proceed_check_out_btn = 'Print Receipt'
 								
-								socket.emit('join_session', session);
+								//~ socket.emit('join_session', session);
 								socket.emit('transaction_completed');
 							}
 							else{
@@ -573,7 +571,7 @@ else {
 							
 							this.balance = Number(response.data[0]['meal_allowance'] - this.cart_total).toFixed(2)
 							
-							socket.emit('join_session', session);
+							//~ socket.emit('join_session', session);
 							socket.emit('employee_details', {
 								employee : this.employee,
 								balance : this.balance

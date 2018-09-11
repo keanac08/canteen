@@ -229,7 +229,7 @@ else {
 			$(function(){
 				
 				$("body.page-v2").vegas({
-					overlay: true, 
+					//~ overlay: true, 
 					transition: 'fade', 
 					transitionDuration: 4000,
 					delay: 10000,
