@@ -606,6 +606,11 @@ else {
 					this.balance = ''
 					
 					this.message.show_error = false;
+					
+					socket.emit('employee_details', {
+						employee : this.employee,
+						balance : this.balance
+					});
 				}
 			},
 			numpad_click: function(value){
