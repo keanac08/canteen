@@ -23,13 +23,14 @@ class Sales_model extends CI_Model {
 	
 	public function get_sales_by_date_range($from, $to, $cashier_id = NULL){
 		
-		if($cashier_id == NULL){
-			$and = '';
+		if($cashier_id != NULL){
+			$and = "AND c.id = " . $cashier_id . " ";
+			
 		}
 		else{
-			$and = 'AND c.id = ' . $cashier_id;
+			$and = "";
 		}
-		
+
 		//change datetime to cutoff date
 		$sql = "SELECT t.id, 
 					 CONCAT(pit.first_name, ' ', pit.last_name) customer_name, 
@@ -47,8 +48,8 @@ class Sales_model extends CI_Model {
 				 LEFT JOIN ipc_central.personal_information_tab pit2
 					ON t.cashier_id = pit2.employee_id
 				 WHERE DATE(t.datetime) between ? AND ?
-				 ".$and."
-				 ORDER BY t.id DESC";
+				 ".$and." 
+				 ORDER BY t.id DESC";// echo $sql;
 
 		$data = $this->db->query($sql, array($from, $to));
 		return $data->result();

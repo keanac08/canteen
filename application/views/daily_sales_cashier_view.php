@@ -13,27 +13,23 @@
 			<div class="box box-danger">
 				<div class="box-header with-border">
 					<h6 class="box-title">Cashier Sales</h6>
-					<div class="box-tools pull-right" style="margin-top: 5px;">
-						<a class="text-red" target="_blank" data-toggle="tooltip" data-placement="top" title="PDF" href="<?php echo base_url("reports/sales_report_pdf/index/".str_replace('/', '', $from_date).'/'.str_replace('/', '', $to_date)); ?>" class=""><i class="fa fa-file-pdf-o"></i></a>
-						<a class="text-green" target="_blank" data-toggle="tooltip" data-placement="top" title="Excel" href="<?php echo base_url("reports/sales_report_excel/index/".str_replace('/', '', $from_date).'/'.str_replace('/', '', $to_date)); ?>" class=""><i class="fa fa-file-excel-o"></i></a>
-					</div>
 				</div>
 				<div class="row">
 					<div class="col-sm-9" style="padding: 10px;margin-left: 20px;">
 						<form id="form_filters" class="form-horizontal" method="POST" accept-charset="utf-8">
-							<input type="hidden" name="from_date" value="<?php echo ($from_date == '')? date('01-M-y'):date('d-M-y', strtotime($from_date)); ?>"/>
-							<input type="hidden" name="to_date" value="<?php echo ($to_date == '')? date('d-M-y'):date('d-M-y', strtotime($to_date)); ?>"/>
+							<input type="hidden" name="from_date" value="<?php echo $from_date; ?>"/>
+							<input type="hidden" name="to_date" value="<?php echo $to_date; ?>"/>
 							<div class="form-group">
 								<label class="col-sm-2 control-label" for="unput1">Purchase Date</label>
 								<div class="col-sm-4">
-									<input class="form-control" type="text" name="purchase_date" value="<?php echo ($from_date == '')? date('m/01/Y'):date('m/d/Y', strtotime($from_date)); ?> - <?php echo ($to_date == '')? date('m/d/Y'):date('m/d/Y', strtotime($to_date)); ?>" />
+									<input class="form-control" type="text" name="purchase_date" value="<?php echo date('m/d/Y', strtotime($from_date)) .' - '. date('m/d/Y', strtotime($to_date)); ?>" />
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-2 control-label" for="unput1">Cashier</label>
 								<div class="col-sm-4">
 									<select class="form-control selectpicker" data-live-search="true" name="cashier_id">
-										<option value="0">Nothing Selected...</option>
+										<option value="99999">Nothing Selected...</option>
 										<?php 
 										foreach($cashiers as $cashier){
 											if($cashier_id == $cashier->id){
@@ -110,12 +106,6 @@
 <script>
 	$(document).ready(function() {   
 		
-		$('select').on('change', function(e){
-			$('input[name="from_date"]').val(picker.startDate.format('YYYY-MM-DD'));
-			$('input[name="to_date"]').val(picker.endDate.format('YYYY-MM-DD'));
-			form_filters.submit();
-		});
-		
 		$('#sales_report').DataTable({
 			//~ 'bSort' : false
 			"order": []
@@ -125,6 +115,13 @@
 		$('input[name="purchase_date"]').on('apply.daterangepicker', function(ev, picker) {
 			$('input[name="from_date"]').val(picker.startDate.format('YYYY-MM-DD'));
 			$('input[name="to_date"]').val(picker.endDate.format('YYYY-MM-DD'));
+			form_filters.submit();
+		});
+		
+		//~ $('.selectpicker').selectpicker();
+		$('.selectpicker').on('change', function(){
+			$('input[name="from_date"]').val($('input[name=purchase_date]').data('daterangepicker').startDate.format('YYYY-MM-DD'));
+			$('input[name="to_date"]').val($('input[name=purchase_date]').data('daterangepicker').endDate.format('YYYY-MM-DD'));
 			form_filters.submit();
 		});
 

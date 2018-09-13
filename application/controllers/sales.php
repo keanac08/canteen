@@ -55,7 +55,9 @@ class Sales extends CI_Controller {
 		
 		$from_date = $this->input->post('from_date') == NULL ? date('Y-m-d') : date('Y-m-d', strtotime($this->input->post('from_date')));
 		$to_date = $this->input->post('to_date') == NULL ? date('Y-m-d') : date('Y-m-d', strtotime($this->input->post('to_date')));
-		$cashier_id = $this->input->post('cashier_id') == NULL ? 0 : $this->input->post('cashier_id');
+		$cashier_id = $this->input->post('cashier_id') == NULL ? 99999 : $this->input->post('cashier_id');
+		
+		//~ echo $cashier_id;
 		
 		$data['content'] = 'daily_sales_cashier_view';
 		$data['title'] = 'IPC Canteen POS';
