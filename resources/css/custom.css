@@ -332,8 +332,8 @@ body, html {
 #customer-footer {
     position: fixed;
     bottom: 0;
-    left: 60px;
-    width: 100%;
+    width: inherit;
+    text-align: center;
 }
 
 .page-copyright {

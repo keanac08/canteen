@@ -31,9 +31,11 @@ else {
 		<div class="page animsition" style="opacity: .90;">
 			<div class="page-content">
 				<div class="page-main">
-					<div class="text-right">
+					<div class="pull-left" style="padding: 5px 0 0 15px;">
 						<img width="100px" style="margin-bottom: 5px;" src="<?php echo base_url('resources/images/logo_white.png')?>">
-						<p style="margin-bottom: 0;font-size: 12px;">IPC Canteen v.2.0</p>
+					</div>
+					<div class="pull-right" style="padding-top: 5px">
+						<?php echo date('D, d M Y')?>, <span id="clock"></span>
 					</div>
 					<div class="user-panel" style="visibility: hidden;">
 						<div class="pull-left image">
@@ -83,14 +85,14 @@ else {
 								<td id="balance" style="border-top: 1px solid #f1f1f1;" class="text-right"></td>
 							</tr>
 						</table>
+						
 					</div>
-					<div id="customer-footer" class="page-copyright">
+					<div id="customer-footer" class="page-copyright" style="margin-left: -10px;">
 						<p>&copy; 2018 <span class="text-red">Management Information System</span> All Rights Reserved.</p>
 					</div>
 				</div>
 			</div>
 		</div>
-	
 		<script src="<?php echo base_url('resources/js/jquery-3.2.1/dist/jquery.min.js');?>"></script>
 		<script src="<?php echo base_url('resources/plugins/vegas/vegas.min.js');?>"></script>
 		<script src="<?php echo base_url('resources/plugins/toastr/build/toastr.min.js');?>"></script>
@@ -226,8 +228,33 @@ else {
 				$('.image img').attr('src', base_url + 'resources/images/default.png');
 			}
 			
-			$(function(){
-				
+			function updateClock() 
+				{
+					var currentTime = new Date();
+					// Operating System Clock Hours for 12h clock
+					var currentHoursAP = currentTime.getHours();
+					// Operating System Clock Hours for 24h clock
+					var currentHours = currentTime.getHours();
+					// Operating System Clock Minutes
+					var currentMinutes = currentTime.getMinutes();
+					// Operating System Clock Seconds
+					var currentSeconds = currentTime.getSeconds();
+					// Adding 0 if Minutes & Seconds is More or Less than 10
+					currentMinutes = (currentMinutes < 10 ? "0" : "") + currentMinutes;
+					currentSeconds = (currentSeconds < 10 ? "0" : "") + currentSeconds;
+					// Picking "AM" or "PM" 12h clock if time is more or less than 12
+					var timeOfDay = (currentHours < 12) ? "AM" : "PM";
+					// transform clock to 12h version if needed
+					currentHoursAP = (currentHours > 12) ? currentHours - 12 : currentHours;
+					// transform clock to 12h version after mid night
+					currentHoursAP = (currentHoursAP == 0) ? 12 : currentHoursAP;
+					// display first 24h clock and after line break 12h version
+					var currentTimeString = currentHoursAP + ":" + currentMinutes + ":" + currentSeconds + " " + timeOfDay;
+					// print clock js in div #clock.
+					$("#clock").html(currentTimeString);
+				}
+			
+			$(document).ready(function (){
 				$("body.page-v2").vegas({
 					//~ overlay: true, 
 					transition: 'fade', 
@@ -256,12 +283,8 @@ else {
 					]
 				});
 				
-			
-				
+				setInterval(updateClock, 1000);
 			});
-
 		</script>
-		
-		
 	</body>
 </html>
