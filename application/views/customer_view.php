@@ -32,9 +32,9 @@ else {
 			<div class="page-content">
 				<div class="page-main">
 					<div class="pull-left" style="padding: 5px 0 0 15px;">
-						<img width="100px" style="margin-bottom: 5px;" src="<?php echo base_url('resources/images/logo_white.png')?>">
+						<img width="100px" style="margin-bottom: 5px;" src="<?php echo base_url('resources/images/logo.png')?>">
 					</div>
-					<div class="pull-right" style="padding-top: 5px">
+					<div class="pull-right" style="padding-top: 2px">
 						<?php echo date('D, d M Y')?>, <span id="clock"></span>
 					</div>
 					<div class="user-panel" style="visibility: hidden;">
