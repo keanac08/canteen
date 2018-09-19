@@ -37,6 +37,8 @@ else {
 					<div class="pull-right" style="padding-top: 2px">
 						<?php echo date('D, d M Y')?>, <span id="clock"></span>
 					</div>
+					<br />
+					<br />
 					<div class="user-panel" style="visibility: hidden;">
 						<div class="pull-left image">
 							<img src="<?php echo base_url('resources/images/default.png')?>" onerror="load_default_img()" class="img-circle" alt="User Image">
@@ -137,18 +139,19 @@ else {
 			socket.on('update_cart_item', function (data) {
 				$("table#customer_items tbody tr#"+data.id)
 					.html($('<td>')
+						.attr('class', 'padding-lr-10')
 						.text(data.name)
 					)
 					.append($('<td>')
-						.attr('class', 'text-right')
+						.attr('class', 'text-right padding-lr-10')
 						.text( data.price)
 					)
 					.append($('<td>')
-						.attr('class', 'text-center')
+						.attr('class', 'text-center padding-lr-10')
 						.text(data.quantity)
 					)
 					.append($('<td>')
-						.attr('class', 'text-right')
+						.attr('class', 'text-right padding-lr-10')
 						.text(data.total)
 					)
 			});
