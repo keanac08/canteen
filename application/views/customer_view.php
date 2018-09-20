@@ -38,7 +38,7 @@ else {
 						<?php echo date('D, d M Y')?>, <span id="clock"></span>
 					</div>
 					<br />
-					<br />
+					<hr>
 					<div class="user-panel" style="visibility: hidden;">
 						<div class="pull-left image">
 							<img src="<?php echo base_url('resources/images/default.png')?>" onerror="load_default_img()" class="img-circle" alt="User Image">
