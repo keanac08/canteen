@@ -172,9 +172,20 @@ class Sales extends CI_Controller {
 		$total_purchase = $data['total_purchase'];
 		$transaction_id = $data['transaction_id'];
 		
-		$hname = explode('.', gethostbyaddr($_SERVER['REMOTE_ADDR']));
-
-		$connector = new WindowsPrintConnector('smb://' . $hname[0] . '/EPSON TM-T82II Receipt');
+		//~ $hname = explode('.', gethostbyaddr($_SERVER['REMOTE_ADDR']));
+		//~ $connector = new WindowsPrintConnector('smb://' . $hname[0] . '/EPSON TM-T82II Receipt');
+		
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])){
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		} 
+		else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		} 
+		else {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		
+		$connector = new WindowsPrintConnector('smb://' . $ip . '/EPSON TM-T82II Receipt');
 		$printer = new Printer($connector);
 		
 		try {
