@@ -74,6 +74,11 @@
 						<i class="fa fa-line-chart"></i> <span>Cashier Sales</span>
 					</a>
 				</li>
+				<li class="<?php echo ($this->uri->segment(1) == 'finger' AND $this->uri->segment(2) == 'register') ? 'active' : ''; ?>">
+					<a href="<?php echo base_url('finger/register');?>">
+						<i class="fa fa-user"></i> <span>Register User Fingerprint</span>
+					</a>
+				</li>
 				<?php 
 				}
 				?>
