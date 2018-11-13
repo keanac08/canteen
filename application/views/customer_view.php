@@ -199,6 +199,12 @@ else {
 				toastr.options.extendedTimeOut = 0;
 				toastr.success('Please get your receipt.','Transaction Completed')
 			});
+			
+			socket.on('check_out', function (data) {
+				toastr.options.timeOut = 0;
+				toastr.options.extendedTimeOut = 0;
+				toastr.info('Please scan your fingerprint.')
+			});
 
 			socket.on('employee_details', function (data) {
 				
@@ -257,37 +263,37 @@ else {
 					$("#clock").html(currentTimeString);
 				}
 			
-			$(document).ready(function (){
-				$("body.page-v2").vegas({
+			//~ $(document).ready(function (){
+				//~ $("body.page-v2").vegas({
 					//~ overlay: true, 
-					transition: 'fade', 
-					transitionDuration: 4000,
-					delay: 10000,
-					color: 'red',
-					animation: 'random',
-					animationDuration: 20000,
-					slides: [
-						{ src: base_url + 'resources/images/bg/ipc.jpg' },
-						{ src: base_url + 'resources/images/bg/mux1.jpg' },
-						{ src: base_url + 'resources/images/bg/dmax1.jpg' },
-						{ src: base_url + 'resources/images/bg/truck1.jpg' },
-						{ src: base_url + 'resources/images/bg/ipc.jpg' },
-						{ src: base_url + 'resources/images/bg/mux2.jpg' },
-						{ src: base_url + 'resources/images/bg/dmax2.jpg' },
-						{ src: base_url + 'resources/images/bg/truck2.jpg' },
-						{ src: base_url + 'resources/images/bg/ipc.jpg' },
-						{ src: base_url + 'resources/images/bg/mux3.jpg' },
-						{ src: base_url + 'resources/images/bg/dmax3.jpg' },
-						{ src: base_url + 'resources/images/bg/truck3.jpg' },
-						{ src: base_url + 'resources/images/bg/ipc.jpg' },
-						{ src: base_url + 'resources/images/bg/mux4.jpg' },
-						{ src: base_url + 'resources/images/bg/dmax4.jpg' }
+					//~ transition: 'fade', 
+					//~ transitionDuration: 4000,
+					//~ delay: 10000,
+					//~ color: 'red',
+					//~ animation: 'random',
+					//~ animationDuration: 20000,
+					//~ slides: [
+						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
+						//~ { src: base_url + 'resources/images/bg/mux1.jpg' },
+						//~ { src: base_url + 'resources/images/bg/dmax1.jpg' },
+						//~ { src: base_url + 'resources/images/bg/truck1.jpg' },
+						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
+						//~ { src: base_url + 'resources/images/bg/mux2.jpg' },
+						//~ { src: base_url + 'resources/images/bg/dmax2.jpg' },
+						//~ { src: base_url + 'resources/images/bg/truck2.jpg' },
+						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
+						//~ { src: base_url + 'resources/images/bg/mux3.jpg' },
+						//~ { src: base_url + 'resources/images/bg/dmax3.jpg' },
+						//~ { src: base_url + 'resources/images/bg/truck3.jpg' },
+						//~ { src: base_url + 'resources/images/bg/ipc.jpg' },
+						//~ { src: base_url + 'resources/images/bg/mux4.jpg' },
+						//~ { src: base_url + 'resources/images/bg/dmax4.jpg' }
 						
-					]
-				});
+					//~ ]
+				//~ });
 				
-				setInterval(updateClock, 1000);
-			});
+				//~ setInterval(updateClock, 1000);
+			//~ });
 		</script>
 	</body>
 </html>

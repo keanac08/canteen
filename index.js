@@ -65,6 +65,10 @@ nsp.on('connection', function (socket) {
 		//~ console.log(data);
 		nsp.to(socket.room).emit("employee_details", data);
 	});	
+	socket.on('check_out', function () {
+		//~ console.log(data);
+		nsp.to(socket.room).emit("check_out");
+	});	
 	
 	socket.on('refresh', function () {
 		//~ console.log('refresh');
