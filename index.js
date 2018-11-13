@@ -11,6 +11,8 @@ server.listen(3000);
 
 let nsp = io.of('canteen');
 
+console.log('Canteen V2 Server. Please do not close.')
+
 nsp.on('connection', function (socket) {
 	
 	socket.on('join_session', function (client_ip) {
