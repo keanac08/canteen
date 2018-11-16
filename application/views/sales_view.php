@@ -12,7 +12,7 @@ else {
 	$ip = $_SERVER['REMOTE_ADDR'];
 }
 
-$server_ip = "172.16.2.84";
+$server_ip = SERVER_IP;
 if($ip == "::1"){
 	$client_ip = $server_ip;
 }

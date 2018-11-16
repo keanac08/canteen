@@ -10,7 +10,7 @@ else {
 	$ip = $_SERVER['REMOTE_ADDR'];
 }
 
-$server_ip = "172.16.2.84";
+$server_ip = SERVER_IP;
 if($ip == "::1"){
 	$client_ip = $server_ip;
 }
@@ -54,6 +54,10 @@ else{
 										<td>{{ employee.section }}</td>
 									</tr>
 									<tr>
+										<td><strong>Fingerprint :<strong></td>
+										<td>{{ employee.fingerprint }}</td>
+									</tr>
+									<tr>
 										<td colspan="2">&nbsp;</td>
 									</tr>
 								</tbody>
@@ -62,8 +66,9 @@ else{
 					</div>
 				</div>
 				<div class="box-footer text-right">
+					<button disabled id="delete_finger" class=" btn btn-danger pull-left" v-on:click="delete_finger()">Delete</button>
+					<button disabled id="test_finger" class="btn btn-primary" v-on:click="test_finger()">Test</button>
 					<button disabled id="save_finger" class=" btn btn-success" v-on:click="add_finger()">Save</button>
-					<button disabled id="test_finger" class="btn btn-danger" v-on:click="test_finger()">Test</button>
 				</div>
 			</div>
 		</div>
@@ -216,11 +221,12 @@ else{
 				name: '',
 				section: '',
 				allowance: '',
+				fingerprint: '',
 				image_link: base_url + '/resources/images/default.png'
 			},
 		},
 		created() {
-			//~ this.start();
+			this.start();
 		},
 		watch: {
 			employee_number : function(){
@@ -240,15 +246,25 @@ else{
 				//~ },1000);
 			},
 			get_template : function(finger_id){
-				setTimeout(()=>{
+				//~ setTimeout(()=>{
 					GetFingerprintTemplate(finger_id);
-				},1000);
+				//~ },1000);
 			},
 			add_finger : function(){
 				if((this.employee_number).length == 6){
-					setTimeout(()=>{
+					//~ setTimeout(()=>{
 						AddFingerprintTemplate(this.employee_number);
-					},1000);
+					//~ },1000);
+				}
+				else{
+					alert('Employee Number is required.')
+				}
+			},
+			delete_finger : function(){
+				if((this.employee_number).length == 6){
+					//~ setTimeout(()=>{
+						DeleteFingerprintTemplate(this.employee_number);
+					//~ },1000);
 				}
 				else{
 					alert('Employee Number is required.')
@@ -272,7 +288,8 @@ else{
 								id: response.data[0]['id'],
 								number: response.data[0]['employee_no'],
 								name: response.data[0]['first_name']  + ' ' + response.data[0]['last_name'],
-								section: response.data[0]['section']
+								section: response.data[0]['section'],
+								fingerprint: response.data[0]['fingerprint']
 							}
 							if(image_id == 0){
 								this.customer_default_image = base_url + 'resources/images/emp_pics/' + response.data[0]['employee_no']
@@ -283,9 +300,17 @@ else{
 							else if(image_id == 2){
 								this.test_default_image_2 = base_url + 'resources/images/emp_pics/' + response.data[0]['employee_no']
 							}
+							
+							if(response.data[0]['fingerprint'] == "Registered"){
+								document.getElementById("delete_finger").disabled = false;
+							}
+							else{
+								document.getElementById("delete_finger").disabled = true;
+							}
 						}
 						else{
 							alert('Employee does not exist!')
+							document.getElementById("delete_finger").disabled = true;
 						}
 						
 					})
@@ -305,9 +330,9 @@ else{
 				}
 			},
 			test_finger : function(){
-				setTimeout(()=>{
+				//~ setTimeout(()=>{
 					VerifyFingerprintTemplate();
-				},1000);
+				//~ },1000);
 			},
 			close_test : function(){
 				$('#myModal').modal('hide');
@@ -450,9 +475,9 @@ else{
 					vue.employee_number = '';
 					document.getElementById("test_finger").disabled = false;
 				}
-				setTimeout(function() {
+				//~ setTimeout(function() {
 					GetFingerprintTemplate(imageNo);
-				}, 1000);	
+				//~ }, 1000);	
 			}
 			else{
 				alert('Capture fail.');
@@ -632,6 +657,32 @@ else{
 				}
 			}
 		}
+	}
+	
+	function DeleteFingerprintTemplate(employeeNumber){
+		
+		Request("DeleteFingerprintTemplate", "", 0, employeeNumber,"","","","","","","","","","", 0, 0);
+		if(wsl){
+			wsl.onmessage = function(e){		
+				var response = JSON.parse(e.data);	
+				vue.employee_number = '';
+				if(response.ResponseCode == 0){
+					alert('Fingerprint deletion failed.');	
+				}else{
+					alert('Fingerprint successfully deleted to server.');				
+				}
+			}
+		}else{
+			ws.onmessage = function(e){		
+				var response = JSON.parse(e.data);	
+				vue.employee_number = '';
+				if(response.ResponseCode == 0){
+					alert('Fingerprint deletion failed.');	
+				}else{
+					alert('Fingerprint successfully deleted to server.');				
+				}
+			}
+		}	
 	}
 </script>
 
