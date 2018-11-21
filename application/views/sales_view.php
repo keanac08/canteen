@@ -85,7 +85,8 @@ else{
 				<div class="box-footer text-right">
 					<img :src="employee.image_link" @error="imageLoadError" v-if="employee.id != ''" class="img-thumbnail pull-left" style="width:48px;" alt="Employee Picture">
 					<button class="btn btn-default btn-lg" v-on:click="clear_cart">Clear</button>
-					<button class="btn btn-danger btn-lg" :disabled="check_out_disabled" v-on:click="check_out">Check Out</button>
+					<button class="btn btn-danger btn-lg" :disabled="check_out_disabled" v-on:click="check_out(2)">Finger</button>
+					<button class="btn btn-danger btn-lg" :disabled="check_out_disabled" v-on:click="check_out(1)">Barcode</button>
 				</div>
 			</div>
 		</div>
@@ -499,11 +500,14 @@ else{
 					this.clear_cart();
 				}
 			},
-			check_out: function() {
-				this.capture_fingerprint();
+			check_out: function(method) {
+				if(method == 2){
+					this.capture_fingerprint();
+					socket.emit('check_out');
+				}
 				$('#myModal').modal({backdrop: 'static'});
 				
-				socket.emit('check_out');
+				
 			},
 			proceed_check_out: function() {
 				
