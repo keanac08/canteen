@@ -13,6 +13,9 @@ class sales_report_pdf extends CI_Controller {
 	
 	public function index(){
 		
+		ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', 3600);
+		
 		$from_date = $this->uri->segment(4);
 		$to_date =  $this->uri->segment(5);
 		
