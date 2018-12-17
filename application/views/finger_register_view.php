@@ -480,8 +480,8 @@ else{
 				//~ }, 1000);	
 			}
 			else{
-				alert('Capture fail.');
-				ConnectDevice('FDU03');
+				alert('Capture fail. Please try again.');
+				//~ ConnectDevice('FDU03');
 			}	
 		}	
 		Request("CaptureFingerprint", "", fingerprintId, "","","","","","","","","","","",5000,50);	
