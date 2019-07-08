@@ -85,7 +85,7 @@ else{
 				<div class="box-footer text-right">
 					<img :src="employee.image_link" @error="imageLoadError" v-if="employee.id != ''" class="img-thumbnail pull-left" style="width:48px;" alt="Employee Picture">
 					<button class="btn btn-default btn-lg" v-on:click="clear_cart">Clear</button>
-					<button class="btn btn-danger btn-lg" :disabled="check_out_disabled" v-on:click="check_out(2)">Finger</button>
+					<button class="btn btn-danger btn-lg" :disabled="finger_disabled" v-on:click="check_out(2)">Finger</button>
 					<button class="btn btn-danger btn-lg" :disabled="check_out_disabled" v-on:click="check_out(1)">Barcode</button>
 				</div>
 			</div>
@@ -160,7 +160,7 @@ else{
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-lg btn-default" v-on:click="close_check_out">Close</button>
+					<button type="button" class="btn btn-lg btn-default" v-on:click="close_check_out" id="close_btn">Close</button>
 					<button type="button" class="btn btn-lg btn-danger" v-show="proceed_check_out_show" :disabled="proceed_check_out_disabled" v-on:click="proceed_check_out" >{{ proceed_check_out_btn }}</button>
 				</div>
 			</div>
@@ -181,6 +181,14 @@ else{
 <script src="<?php echo base_url('resources/plugins/socket_io/socket.io-1.7.3.min.js') ?>"></script>
 <script>
 	
+	var ws;	
+	var wsl;
+	var serverIP = "<?php echo $server_ip; ?>";
+	var clientIP = "<?php echo $client_ip; ?>";
+	var state = 0;			
+	var template;
+	var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+	
 	//~ var socket = socket.connect('http://localhost:3000');
 	const base_url = '<?php echo base_url(); ?>'
 	const session = '<?php echo $ip; ?>'
@@ -188,7 +196,7 @@ else{
 	
 	socket.emit('join_session', session);
 	socket.emit('refresh');
-	
+
 	var helper = {
 	  methods: {
 		amount: function (number) {
@@ -247,9 +255,12 @@ else{
 			active_index: 0,
 			last_transaction_id: '',
 			check_out_disabled: true,
+			finger_disabled: true,
 			proceed_check_out_disabled: true,
 			proceed_check_out_show: true,
-			proceed_check_out_btn : 'Proceed Check Out'
+			proceed_check_out_btn : 'Proceed Check Out',
+			
+			active_scan : false
 		},
 		mixins: [helper],
 		created() {
@@ -284,11 +295,15 @@ else{
 				}
 			},
 			cart_total: function(){
-				if(this.cart_total > 0){
-					this.check_out_disabled = false;
-				}
-				else{
-					this.check_out_disabled = true;
+				if(this.active_scan == false){
+					if(this.cart_total > 0){
+						this.check_out_disabled = false;
+						this.finger_disabled = false;
+					}
+					else{
+						this.check_out_disabled = true;
+						this.finger_disabled = true;
+					}
 				}
 			},
 			employee_number : function(){
@@ -300,7 +315,10 @@ else{
 		},
 		methods : {
 			start : function(){
-				ConnectDevice('FDU03');
+				ConnectDevice();
+			},
+			disconnect : function(){
+				DisconnectDevice();
 			},
 			capture_fingerprint : function(){
 				CaptureFingerprint(0, 0);
@@ -659,14 +677,6 @@ else{
 		}
 	});
 	
-	var ws;	
-	var wsl;
-	var serverIP = "<?php echo $server_ip; ?>";	
-	var clientIP = "<?php echo $client_ip; ?>";
-	var state = 0;			
-	var template;
-	var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
-	
 	function Request(cmd, deviceName, fingerprintId, referenceId, base64data1, base64data2, base64data3, base64data4, base64data5, base64data6, base64data7, base64data8, base64data9, base64data10, timeout, threshold){
 		//~ ControlDisabled(false, true, true, true, true);
 		var request = {"FingerPrintCommand" : cmd,
@@ -732,7 +742,7 @@ else{
 					ws.send(JSON.stringify(request));		
 				};						
 			}else{	
-				if(cmd == "Connect" || cmd == "Disconnect" || cmd == "CaptureFingerprint" || cmd == "GetFingerprintTemplate" || cmd == "VerifyTemplate")
+				if(cmd == "GetDeviceList" || cmd == "Connect" || cmd == "Disconnect" || cmd == "CaptureFingerprint" || cmd == "GetFingerprintTemplate" || cmd == "VerifyTemplate")
 				{
 					ws.send(JSON.stringify(request));	
 				}	
@@ -750,62 +760,75 @@ else{
 		}			
 	}
 	
-	function ConnectDevice(deviceName){
+	function ConnectSecugen(deviceName){
+	
+		Request("Connect", deviceName, 0, "","","","","","","","","","","",0,0);
+		ws.onmessage = function(e){		
+			var response = JSON.parse(e.data);	
+			if(response.ResponseCode == 0){
+			}
+			else{	
+			}			   
+		}	
+	}
+	
+	function ConnectDevice(){
 		
 		Request("GetDeviceList", "", 0, "","","","","","","","","","","",0,0);
-		if(wsl){
-			wsl.onmessage = function(e){			
-				
-			}
-		}
-		else{
-			ws.onmessage = function(e){			
-				
-			}
-		}
 		
-		setTimeout(function() {
-			Request("Connect", deviceName, 0, "","","","","","","","","","","",0,0);
-			ws.onmessage = function(e){		
-				var response = JSON.parse(e.data);	
-				if(response.ResponseCode == 0){
-				}
-				else{	
-				}			   
+		ws.onmessage = function(e){			
+			var response = JSON.parse(e.data);		
+			console.log(response);	
+			if(response.length > 0){		
+				console.log('Device detected');			
+				ConnectSecugen(response[0]);
+			}else{
+				   //prompt that no device was detected	
+				   console.log('No device detected');
 			}
-		}, 1000);			
+		}
 	}
 	
 	function CaptureFingerprint(fingerprintId,imageNo){
 		
+		vue.finger_disabled = true;
+		vue.active_scan = true;
+		
 		ws.onmessage = function(e){			
 			var response = JSON.parse(e.data);	
-			console.log(response);
+			//~ console.log(response);
+			
 			if(response.ResponseCode == 0){
-				//~ setTimeout(function() {
-					GetFingerprintTemplate();
-				//~ }, 1000);	
+				console.log('Fingerprint captured. Quality :' + response.Quality)
+				GetFingerprintTemplate();
 			}
 			else{
-				alert('Capture fail.');
-				ConnectDevice('FDU03');
-				//~ CaptureFingerprint(0,0)
+				new Promise(function(resolve, reject) {
+					ConnectDevice();
+					setTimeout(() => resolve(1), 1000); 
+				}).then(function() { 
+					document.getElementById("close_btn").disabled = true;
+				}).then(function() { 
+					alert('Capture fail. Please try again!')
+				}).then(function() {
+					setTimeout(function() {
+						document.getElementById("close_btn").disabled = false;
+						vue.finger_disabled = false;
+						vue.active_scan = false;
+					}, 2000);
+				});
 			}	
 		}	
 		Request("CaptureFingerprint", "", fingerprintId, "","","","","","","","","","","",5000,50);	
 	}
 	
-	function GetFingerprintTemplate(){
+	function GetFingerprintTemplate(templateNo){
 		ws.onmessage = function(e){			 
 			var response = JSON.parse(e.data);
-			//~ alert('Get template ' + (response.ResponseCode == 0 ? 'success.' : 'fail.'));
-		
-			if(response.ResponseCode == 0){			   			     
-				console.log(response);
+			if(response.ResponseCode == 0){		
 				template = response.Base64Data;
 				VerifyFingerprintTemplate()
 			}
-		
 		}
 		Request("GetFingerprintTemplate", "", 0, "","","","","","","","","","","",0,0);
 	}
@@ -815,34 +838,59 @@ else{
 		if(wsl){
 			wsl.onmessage = function(e){
 				var response = JSON.parse(e.data);	
-				if(response.ResponseCode == 0){		
-					vue.employee_number = response.ReferenceId;
-					//~ vue.get_employee_details()
-					//~ alert('Match found! Employee ID: ' + response.ReferenceId);
-					console.log(response);				
+				if(response.ResponseCode == 0){
+					if(response.Quality > 40){
+						vue.employee_number = response.ReferenceId;
+						console.log('Match found. Quality : '  + response.Quality + ', ID : '  + response.ReferenceId);	
+					}
+					else{
+						alert('Match false! Please Try again.');
+						console.log('Match found. Quality : '  + response.Quality + ', ID : '  + response.ReferenceId);	
+					}			
 				}
 				else{
-					alert('Match false!');
-					console.log(response);
-				}	
+					alert('Match false! Please Try again.');
+					console.log('Match false!');	
+					//~ console.log(response);	
+				}
+				vue.finger_disabled = false;	
+				vue.active_scan = false;
 			}
 		}
 		else{
 			ws.onmessage = function(e){
 				var response = JSON.parse(e.data);	
-				if(response.ResponseCode == 0){		
-					vue.employee_number = response.ReferenceId;
-					//~ alert('Match found! Employee ID: ' + response.ReferenceId);
-					console.log(response);				
+				if(response.ResponseCode == 0){
+					if(response.Quality > 40){
+						vue.employee_number = response.ReferenceId;
+						console.log('Match found. Quality : '  + response.Quality + ', ID : '  + response.ReferenceId);	
+					}
+					else{
+						alert('Match false! Please Try again.');
+						console.log('Match found. Quality : '  + response.Quality + ', ID : '  + response.ReferenceId);	
+					}			
 				}
 				else{
-					alert('Match false!');
-					console.log(response);
+					alert('Match false! Please Try again.');
+					console.log('Match false!');	
+					//~ console.log(response);	
 				}
+				vue.finger_disabled = false;	
 			}
 		}
 	}
 	
+	function DisconnectDevice(){
+		Request("Disconnect", "", 0, "","","","","","","","","","","",0,0);
+		ws.onmessage = function(e){			 
+			var response = JSON.parse(e.data);		
+			if(response.ResponseCode == 0){
+				console.log('Device Disconnected');		
+			}else{
+				console.log('Device Disconnection Failed');	
+			}			   
+		}			
+	}
 	
 	$(function(){
 		
@@ -859,9 +907,7 @@ else{
 		$('#myModal').on('shown.bs.modal', function () {
 			$('#employee_number').focus();
 		})
-		
-		
-		// SECUGEN
+
 	});
 	
 	

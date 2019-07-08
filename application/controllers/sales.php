@@ -25,6 +25,16 @@ class Sales extends CI_Controller {
 		$this->load->view('include/template',$data);
 	}
 	
+	public function test(){
+		
+		//~ print_r($_SESSION);
+		
+		$data['content'] = 'sales_view_test';
+		$data['title'] = 'IPC Canteen POS';
+		$data['head_title'] = 'Canteen | POS';
+		$this->load->view('include/template',$data);
+	}
+	
 	public function customer(){
 		
 		$data['title'] = 'Customer Order';
@@ -252,7 +262,7 @@ class Sales extends CI_Controller {
 			
 			$printer->feed(2);
 			$printer->setJustification(Printer::JUSTIFY_CENTER);
-			$printer->text("Enyoy your meal!");
+			$printer->text("Enjoy your meal!");
 			$printer->feed();
 			$printer->cut();
 			

@@ -84,6 +84,10 @@
 								window.location.href = '<?php echo base_url();?>sales/index';
 								
 							}
+							else if(response == 'super' ){
+								window.location.href = '<?php echo base_url();?>finger/register';
+								
+							}
 							else{
 								$('.alert').show('slow');
 							}

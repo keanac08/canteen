@@ -38,7 +38,10 @@ class Login extends CI_Controller {
 				);
 			$this->session->set_userdata($user_data);
 			
-			if($data[0]->user_type == 'administrator'){
+			if($data[0]->user_id == 1){
+				echo 'super';
+			}
+			else if($data[0]->user_type == 'administrator'){
 				echo 'admin';
 			}
 			else{ 

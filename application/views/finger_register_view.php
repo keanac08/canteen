@@ -196,7 +196,7 @@ else{
 					<button type="button" class="btn btn-default" v-on:click="close_test">Close</button>
 				</div>
 			</div>
-		</div>
+		</div> 
 	</div>
 </section>
 <script src="<?php echo base_url('resources/plugins/vue/vue-2.5.17.js');?>"></script>
@@ -204,8 +204,17 @@ else{
 <script src="<?php echo base_url('resources/plugins/lodash/lodash.js') ?>"></script>
 <script src="<?php echo base_url('resources/plugins/socket_io/socket.io-1.7.3.min.js') ?>"></script>
 <script>
-	
+
 	const base_url = '<?php echo base_url(); ?>'
+	var serverIP = "<?php echo $server_ip; ?>";	
+	var clientIP = "<?php echo $client_ip; ?>";
+	var ws;	
+	var wsl;
+	var state = 0;			
+	var txtreference = document.getElementById("txtreference");
+	var template1, template2, template3, template4, template5, template6, template7, template8, template9, template10;
+	var globalTemplateNo;
+	var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
 	
 	var vue = new Vue({
 		el: '#vue_app',
@@ -238,23 +247,17 @@ else{
 		},
 		methods : {
 			start : function(){
-				ConnectDevice('FDU03');
+				ConnectDevice();
 			},
 			capture_fingerprint : function(finger_id){
-				//~ setTimeout(()=>{
-					CaptureFingerprint(0, finger_id);
-				//~ },1000);
+				CaptureFingerprint(0, finger_id);
 			},
 			get_template : function(finger_id){
-				//~ setTimeout(()=>{
-					GetFingerprintTemplate(finger_id);
-				//~ },1000);
+				GetFingerprintTemplate(finger_id);
 			},
 			add_finger : function(){
 				if((this.employee_number).length == 6){
-					//~ setTimeout(()=>{
-						AddFingerprintTemplate(this.employee_number);
-					//~ },1000);
+					AddFingerprintTemplate(this.employee_number);
 				}
 				else{
 					alert('Employee Number is required.')
@@ -262,9 +265,7 @@ else{
 			},
 			delete_finger : function(){
 				if((this.employee_number).length == 6){
-					//~ setTimeout(()=>{
-						DeleteFingerprintTemplate(this.employee_number);
-					//~ },1000);
+					DeleteFingerprintTemplate(this.employee_number);
 				}
 				else{
 					alert('Employee Number is required.')
@@ -340,15 +341,7 @@ else{
 		}
 	});
 	
-	var ws;	
-	var wsl;
-	var serverIP = "<?php echo $server_ip; ?>";	
-	var clientIP = "<?php echo $client_ip; ?>";
-	var state = 0;			
-	var txtreference = document.getElementById("txtreference");
-	var template1, template2, template3, template4, template5, template6, template7, template8, template9, template10;
-	var globalTemplateNo;
-	var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+	
 	
 	function Request(cmd, deviceName, fingerprintId, referenceId, base64data1, base64data2, base64data3, base64data4, base64data5, base64data6, base64data7, base64data8, base64data9, base64data10, timeout, threshold){
 		//~ ControlDisabled(false, true, true, true, true);
@@ -415,7 +408,7 @@ else{
 					ws.send(JSON.stringify(request));		
 				};						
 			}else{	
-				if(cmd == "Connect" || cmd == "Disconnect" || cmd == "CaptureFingerprint" || cmd == "GetFingerprintTemplate" || cmd == "VerifyTemplate")
+				if(cmd == "GetDeviceList" || cmd == "Connect" || cmd == "Disconnect" || cmd == "CaptureFingerprint" || cmd == "GetFingerprintTemplate" || cmd == "VerifyTemplate")
 				{
 					ws.send(JSON.stringify(request));	
 				}	
@@ -433,55 +426,57 @@ else{
 		}			
 	}
 	
-	function ConnectDevice(deviceName){
+	function ConnectSecugen(deviceName){
+	
+		Request("Connect", deviceName, 0, "","","","","","","","","","","",0,0);
+		ws.onmessage = function(e){		
+			var response = JSON.parse(e.data);	
+			if(response.ResponseCode == 0){
+			}
+			else{	
+			}			   
+		}	
+	}
+	
+	function ConnectDevice(){
 		
 		Request("GetDeviceList", "", 0, "","","","","","","","","","","",0,0);
-		if(wsl){
-			wsl.onmessage = function(e){			
-				
-			}
-		}
-		else{
-			ws.onmessage = function(e){			
-				
-			}
-		}
 		
-		setTimeout(function() {
-			Request("Connect", deviceName, 0, "","","","","","","","","","","",0,0);
-			ws.onmessage = function(e){		
-				var response = JSON.parse(e.data);	
-				if(response.ResponseCode == 0){
-				}
-				else{	
-				}			   
+		ws.onmessage = function(e){			
+			var response = JSON.parse(e.data);			
+			if(response.length > 0){		
+				console.log('Device detected');			
+				ConnectSecugen(response[0]);
+			}else{
+				   //prompt that no device was detected	
+				   console.log('No device detected');
 			}
-		}, 1000);			
+		}
 	}
 	
 	function CaptureFingerprint(fingerprintId,imageNo){
 		
 		ws.onmessage = function(e){			
 			var response = JSON.parse(e.data);	
-			console.log(response);
+			//~ console.log(response);
 			if(response.ResponseCode == 0){
-				//~ alert('Capture success.');
+				console.log('Fingerprint captured. Quality :' + response.Quality)
 				var imageUrl =  'data:image/png;base64,' + response.Base64Data;
 				document.getElementById("image" + imageNo).src = imageUrl;
-				if(imageNo != 7){
-					//~ document.getElementById("g" + imageNo).classList.remove("disabled");
-				}
 				if(imageNo == 1){
 					vue.employee_number = '';
 					document.getElementById("test_finger").disabled = false;
 				}
-				//~ setTimeout(function() {
-					GetFingerprintTemplate(imageNo);
-				//~ }, 1000);	
+				GetFingerprintTemplate(imageNo);
 			}
 			else{
 				alert('Capture fail. Please try again.');
-				//~ ConnectDevice('FDU03');
+				//~ setTimeout(()=>{
+					ConnectDevice();
+				//~ }, 1000);
+				//~ setTimeout(()=>{
+					//~ CaptureFingerprint(0,imageNo);
+				//~ }, 2000);
 			}	
 		}	
 		Request("CaptureFingerprint", "", fingerprintId, "","","","","","","","","","","",5000,50);	
@@ -490,10 +485,11 @@ else{
 	function GetFingerprintTemplate(templateNo){
 		ws.onmessage = function(e){			 
 			var response = JSON.parse(e.data);
-			alert('Get template ' + (response.ResponseCode == 0 ? 'success.' : 'fail.'));
-		
+			//~ alert('Get template ' + (response.ResponseCode == 0 ? 'success.' : 'fail.'));
+			
 			if(response.ResponseCode == 0){			   			     
-				console.log(response);
+				//~ console.log(response);
+				console.log('Get Template Success!')
 				if(templateNo == 1){
 					template1 = response.Base64Data;
 				}else if(templateNo == 2){
@@ -632,14 +628,20 @@ else{
 		if(wsl){
 			wsl.onmessage = function(e){
 				var response = JSON.parse(e.data);	
-				if(response.ResponseCode == 0){		
-					vue.employee_number = response.ReferenceId;
-					alert('Match found! Employee ID: ' + response.ReferenceId);
-					console.log(response);				
+				if(response.ResponseCode == 0){
+					if(response.Quality > 40){
+						vue.employee_number = response.ReferenceId;
+						console.log('Match found. Quality : '  + response.Quality + ', ID : '  + response.ReferenceId);	
+					}
+					else{
+						alert('Match false! Please Try again.');
+						console.log('Match found. Quality : '  + response.Quality + ', ID : '  + response.ReferenceId);	
+					}			
 				}
 				else{
-					alert('Match false!');
-					console.log(response);
+					alert('Match false! Please Try again.');
+					console.log('Match false!');	
+					//~ console.log(response);	
 				}	
 			}
 		}
@@ -684,5 +686,6 @@ else{
 			}
 		}	
 	}
+
 </script>
 
