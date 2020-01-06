@@ -24,8 +24,9 @@
 			<ul class="sidebar-menu" data-widget="tree">
 				<li class="header">MAIN NAVIGATION</li>
 				
-				<?php 
-				if($this->session->ctn_usertype != 'administrator' OR $this->session->ctn_user_id == 1){
+				<?php //12 15
+				if($this->session->ctn_usertype != 'administrator' OR in_array($this->session->ctn_user_id, [1,16]))
+				{
 				?>
 				<li class="<?php echo ($this->uri->segment(1) == 'sales' and $this->uri->segment(2) == 'index') ? 'active' : ''; ?>">
 					<a href="<?php echo base_url('sales/index');?>">
@@ -77,6 +78,11 @@
 				<li class="<?php echo ($this->uri->segment(1) == 'finger' AND $this->uri->segment(2) == 'register') ? 'active' : ''; ?>">
 					<a href="<?php echo base_url('finger/register');?>">
 						<i class="fa fa-user"></i> <span>Register User Fingerprint</span>
+					</a>
+				</li>
+				<li class="<?php echo ($this->uri->segment(1) == 'sales' AND $this->uri->segment(2) == 'register') ? 'active' : ''; ?>">
+					<a href="<?php echo base_url('MealAllowance/upload_meal_allowance');?>">
+						<i class="fa fa-upload"></i> <span>Upload Meal Allowance</span>
 					</a>
 				</li>
 				<?php 

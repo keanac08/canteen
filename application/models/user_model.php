@@ -25,8 +25,10 @@ class User_model extends CI_Model {
 					ON emt.id = uma.user_id
 				LEFT JOIN db_fingerprint.tbl_fingerprint tf
 					ON emt.employee_no = tf.fld_ref_id 
-				WHERE emt.employee_no = ?';
-				
+				WHERE 1=1
+					AND emt.separation_date IS NULL
+					AND emt.employee_no = ?';
+					
 		$data = $this->db->query($sql,$employee_number);
 		return $data->result();
 	}
