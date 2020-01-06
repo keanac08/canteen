@@ -529,10 +529,13 @@ else{
 			},
 			proceed_check_out: function() {
 				
-				this.proceed_check_out_show = false
+				
 
 				//CHECK OUT
 				if(this.last_transaction_id == ''){
+
+					this.proceed_check_out_show = false
+
 					axios({
 							url: base_url + '/sales/ajax_check_out',
 							method: 'post',
