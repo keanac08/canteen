@@ -529,6 +529,8 @@ else{
 			},
 			proceed_check_out: function() {
 				
+				this.proceed_check_out_show = false
+
 				//CHECK OUT
 				if(this.last_transaction_id == ''){
 					axios({
@@ -544,7 +546,9 @@ else{
 							
 							//~ console.log(response.data)
 							if(response.data != false){
-								
+
+								this.proceed_check_out_show = true
+							
 								this.message.success = 'Transaction Completed!';
 								this.message.show_success = true;
 								
